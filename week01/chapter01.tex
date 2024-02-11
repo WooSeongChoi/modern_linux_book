@@ -1,0 +1,81 @@
+\chapter{리눅스 소개}
+
+\section{모던 환경이란 무엇인가?}
+작성 시점인 2024년 기준 리눅스는 다양한 환경에서 사용된다.
+
+\begin{itemize}
+    \item 모바일 디바이스 \newline 
+        안드로이드 OS는 리눅스의 변형이다.
+    \item 클라우드 컴퓨팅 \newline  
+        리눅스는 CSP에서 제공하는 서버의 OS로 많이 사용된다.
+    \item IoT \newline
+        리눅스는 사물 인터넷 OS로도 사용된다.
+    \item 프로세스 아키텍처의 다양성 \newline 
+        전통의 x86-64 이외에도 ARM, RSIC-V 같은 ISA도 지원된다.
+    \item 컨테이너 인프라 \newline
+        Kubernetes, Docker로 대표되는 컨테이너 인프라에서 기본적으로 사용된다.
+\end{itemize}
+\newpage
+
+
+\section{리눅스 역사}
+\subsection*{90년대}
+1991년 리누스 토르발스에 의해 시작되었으며 수많은 기여자의 도움으로 리눅스 1.0.0은 3년이 되기도 전에 릴리즈되었다.
+\newline
+이 시점에서 Unix/GUN 소프트웨어를 실행할 수 있는 운영체제라는 최초 목표는 달성되었다.
+또한, 이 기간에 최초의 상용 리눅스인 Red Hat 리눅스가 등장했다.
+
+\subsection*{2000 - 2010}
+여러 기업에서 리눅스를 본격적으로 도입하며 폭팔적으로 성장하는 시기이다.\newline
+이 시기부터 Linux는 Unix, Windows Server 같은 경쟁 서버보다 점유율 우위를 점하기 시작한다.
+또한, 여러 배포판(distro)가 출시되며 경쟁했다.
+
+\subsection*{2010 이후}
+단순 서버용 이상으로 확장되어 IoT, 모바일 디바이스에서도 사용한다.\newline
+또한, 컨테이너 인프라가 본격적으로 사용되기 시작했다.\newline
+그리고, 상용 서버 배포판은 사실상 Red Hat, Debian 기반으로 수렴했다.
+
+\begin{flushleft}
+    보다 상세한 한글 자료는 \href{https://zdnet.co.kr/view/?no=20200826135027}{리눅스 29돌 사건으로 보는 그 역사}를 참고하라.    
+\end{flushleft}
+
+
+
+\section{리눅스 배포판}
+\textbf{리눅스 커널}은 \textbf{단순 시스템 콜과 디바이스 드라이버의 집합}을 의미한다.\newline
+\textbf{리눅스 배포판}은 \textbf{커널과 관련 구성요소의 전체 번들}을 의미한다. 
+관련 구성요소에는 패키지 관리자, 파일시스템 레이아웃, init system, shell이 포함된다.
+\newpage
+
+
+\section{리소스 가시성}
+리눅스는 리소스의 \textbf{전역 보기}(global view)를 지원한다.\newline
+여기서 \textbf{전역보기}는 무엇이고 \textbf{전역보기의 반대}는 무엇이며 \textbf{리소스}는 무엇인가?
+
+\subsection*{리소스란?}
+\textbf{리소스}는 \textbf{소프트웨어 실행을 지원하는 데 사용할 수 있는 모든 것}으로 간주될 수 있다.\newline
+예를 들면 다음과 같은 것이 리소스로 간주될 수 있다.
+
+\begin{itemize}
+    \item 하드웨어
+    \item 파일시스템
+    \item HDD/SSD
+    \item process
+    \item device
+    \item routing table(Network)
+    \item 자격증명(credential)
+\end{itemize}
+
+\subsection*{전역 리소스}
+예를 들어 HDD 용량 확인, 특정 파일 읽기, ps -ef로 pid 확인하기 같은 것은 여러 계정에서 동일하게 볼 수 있다.
+\newline
+리눅스에서 할 수 있는 대부분의 것이 전역에서 되므로 리눅스의 모든 것은 전역일 것이라 기대할 수 있지만 
+실제로 그렇지 않다.
+
+
+\subsection*{로컬 리소스}
+모든 리소스가 전역인 것은 아니다. 예를 들면 namespace를 통해 리소스의 로컬보기를 지원할 수 있다.
+또한, 특정 프로세스가 메모리 리소스를 고갈시키는 것을 방지하기 위해 
+메모리 소비를 제한하는 것도 메모리가 전역 리소스로 사용하지 않을 수 있다든 것을 보여준다.\newline
+이처럼 리소스의 사용을 제한하는 것은 프로세스의 격리의 일종이며 
+리눅스에서는 \textbf{cgoup}이라는 커널 기능을 사용해 이러한 종류의 격리를 제공한다.\newline
