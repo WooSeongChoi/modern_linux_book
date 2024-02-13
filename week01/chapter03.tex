@@ -35,6 +35,87 @@
 \end{flushleft}
 
 \subsubsection*{스트림}
+\begin{flushleft}
+    셸은 입력과 출력을 위한 세 가지 기본 파일 디스크립터(File Descriptor, FD)를 모든 프로세스에 제공한다.
+\end{flushleft}
+
+\begin{itemize}
+    \item stdin (FD 0)
+    \item stdout (FD 1)
+    \item stderr (FD 2)
+\end{itemize}
+
+\begin{flushleft}
+    이 FD들은 그림 \ref{fig:stream}에 나와 있는 것처럼
+    기본적으로 화면과 키보드에 각각 연결되어 있다.
+    즉 특별하게 지정하지 않는 한,
+    셸에 입력하는 명령은 키보드에서 입력(stdin)을 가져오고 출력(stdout)을 화면에 전달한다.
+    다음 셸의 상호작용에서 위의 기본 동작을 확인할 수 있다.
+\end{flushleft}
+
+\begin{figure}[h]
+    \includegraphics[width=15cm]{resource/3-stream-example}
+    \label{fig:stream-example}
+\end{figure}
+
+\begin{flushleft}
+    cat을 사용한 방금의 예에서 기본값이 동작하는 것을 확인할 수 있다.
+    그리고 Ctrl+c를 사용해 명령을 종료했다.
+\end{flushleft}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=8cm]{resource/3-2}
+    \caption{셸 I/O의 기본 스트림}
+    \label{fig:stream}
+\end{figure}
+
+\begin{flushleft}
+    셸이 제공하는 기본값을 사용하지 않으려면 스트림을 재지정(redirect)할 수 있다.
+\end{flushleft}
+
+\begin{flushleft}
+    \$FD$>$와 $<$\$FD를 사용해 프로세스의 출력 스트림을 재지정할 수 있다.
+    여기서 \$FD는 파일 디스크립터다.
+    예를 들어 2$>$는 stderr 스트림을 재지정한다는 의미다.
+    1$>$는 $>$는 stdout이 기본값이므로 동일한 뜻이다.
+    stdout과 stderr를 모두 재지정하러면 \&$>$를 사용하고
+    스트림을 제거하려면 /dev/null을 사용하면 된다.
+    구체적인 예를 들어 이 사항이 어떻게 동작하는지 살펴보자.
+    아래는 curl을 통해 HTML 콘텐츠를 다운로드 하는 예제이다.
+\end{flushleft}
+
+\begin{figure}[h]
+    \includegraphics[width=15cm]{resource/3-curl-stream}
+\end{figure}
+
+\begin{enumerate}
+    \item stdout과 stderr을 모두 /dev/null로 재지정해 모든 출력값을 버린다.
+    \item 출력값과 상태값을 다른 파일로 재지정한다.
+    \item 대화식으로 값을 입력하고 파일에 저장한다.
+        Ctrl+d를 사용해 캡처를 중지하고 콘텐츠를 저장한다.
+    \item stdin에서 값을 읽는 tr 명령을 사용해 모든 단어를 소문자로 만든다.
+\end{enumerate}
+
+\begin{flushleft}
+    셸은 일반적으로 다음과 같은 여러 특수 문자를 이해한다.
+\end{flushleft}
+
+\begin{itemize}
+    \item \textbf{앰퍼샌드}(\&)\newline
+        명령 마지막에 배피되며 백그라운드에서 명령을 실행한다.
+    \item \textbf{백슬래시}(\textbackslash)\newline
+        긴 명령의 가독성을 높이기 위해 다음 행에서 명령을 계속할 때 사용한다.
+    \item \textbf{파이프}(\textbar)\newline
+        한 프로세스의 stdout 값을 다음 프로세스의 stdin과 연결해 데이터를
+        파일에 임시로 저장하지 않고 바로 전달할 수 있다.
+\end{itemize}
+
+\begin{flushleft}
+    파이프는 매우 많은 사항을 내포하고 있다.
+    파이프와 관련된 사항은 다음 \href{https://web.cse.ohio-state.edu/~mamrak.1/CIS762/pipes_lab_notes.html}{유닉스 파이프}를 참고하고
+    유닉스와 마이크로서비스 사이 유사성을 다룬 \href{https://opensource.com/article/18/11/revisiting-unix-philosophy-2018}{2018년 유닉스 철학 재조명} 기사도 참고하면 좋다.
+\end{flushleft}
 
 
 \subsubsection*{변수}
@@ -75,8 +156,9 @@
     실제로 어떻게 보이는지 살펴보자.
 \end{flushleft}
 
-\begin{figure}[h]
-    \includegraphics[width=8cm]{resource/3-variable.png}
+\begin{figure}[H]
+    \includegraphics[width=8cm]{resource/3-variable}
+    \label{fig:variable}
     \begin{enumerate}
         \item MY\_VAR라는 셸 변수를 생성하고 값을 42로 지정한다.
         \item 셸 변수를 나열하고 MY\_VAR를 필터링 한다.
@@ -94,6 +176,40 @@
             예상대로 MY\_VAR이 사라졌다.
     \end{enumerate}
 \end{figure}
+
+\begin{table}[H]
+    \everyrow{\hline}
+    \begin{tabu}{|X[3]|X[2]|X[12]|}
+        변수         &    유형      & 의미    \\
+        EDITOR      &   POSIX     & 파일 편집 시 기본적으로 사용되는 프로그램의 경로 \\
+        HOME        &   배시 셸    & 현재 사용자의 홈 디렉터리 경로 \\
+        HOSTNAME    &   POSIX     & 현재 호스트의 이름 \\
+        IFS         &   POSIX     & 필드를 구분할 문자 목록, 셸이 단어를 확장해서 분할할 떄 사용함 \\
+        PATH        &   POSIX     & 셸이 실행 가능한 프로그램을 찾는 디렉터리 목록을 포함 \\
+        PS1         &   환경       & 사용 중인 주 프롬프트 문자열 \\
+        PWD         &   환경       & 작업 디렉터리의 전체 경로 \\
+        OLDPWD      &   배시 셸    & 마지막 cd 명령을 실행하기 직전의 디렉터리 경로 \\
+        RANDOM      &   배시 셸    & 0에서 32767 사이의 임의의 정수 \\
+        SHELL       &   환경       & 현재 사용되는 셸 \\
+        TERM        &   환경       & 사용하는 터미널 에뮬레이터 \\
+        UID         &   환경       & 현재 사용자의 고유 ID(정수) \\
+        USER        &   환경       & 현재 사용자 이름 \\
+        \_          &   배시 셸    & foreground에서 실행된 이전 명령의 마지막 인수 \\
+        ?          &   배시 셸    & 종료 상태 \\
+        \$          &   배시 셸    & 현재 프로세스의 ID(정수) \\
+        0           &   배시 셸    & 현재 프로세스의 이름 \\
+    \end{tabu}
+    \caption{일반적인 셸 변수와 환경변수}
+    \label{tab:variable}
+\end{table}
+
+\begin{flushleft}
+    표 \ref{tab:variable}에 일반적인 셸과 환경 변수를 정리했다.
+    이 환경변수들은 거의 모든 곳에서 찾을 수 있으며,
+    잘 이해하고 사용하는 것이 중요하다.
+    모든 변수에 대해 echo \$XXX 명령을 사용하면 해당 값을 볼 수 있는데
+    여기서 XXX는 변수 이름이다.
+\end{flushleft}
 
 \subsubsection*{종료상태}
 \begin{flushleft}
@@ -122,8 +238,10 @@
     다음과 같은 방법이 있다.
 \end{flushleft}
 
-\begin{figure}[h]
-    \includegraphics[width=15cm]{resource/3-built-in.png}
+\begin{figure}[H]
+    \includegraphics[width=15cm]{resource/3-built-in}
+    \caption{실행 파일 위치 확인 예시}
+    \label{fig:build-in}
 \end{figure}
 
 
@@ -136,8 +254,9 @@
     foreground 프로세스를 백그라운드로 보내려면 Ctrl+z를 누르면 된다.
 \end{flushleft}
 
-\begin{figure}
-    \includegraphics[width=15cm]{resource/3-job-control.png}
+\begin{figure}[H]
+    \includegraphics[width=15cm]{resource/3-job-control}
+    \label{fig:job-control}
     \begin{enumerate}
         \item 명령 끝에 \&를 넣으면 백그라운드에서 명령이 실행된다.
         \item 모든 작업(job)의 목록을 출력한다.
@@ -154,14 +273,43 @@
 \end{flushleft}
 
 \subsection*{모던 리눅스 명령어}
+\begin{flushleft}
+    자주 사용되는 명령 중 일부는 대체될 수 있는 모던 명령어가 존재한다.
+    drop-in 교체도 존재하고, 일부는 기능을 확장한 것도 존재한다.
+    다만, 어떤 도구를 선택할지 고민이 된다면 사용하는 리눅스 배포판에서
+    이미 검증된 도구를 사용하는 것이 가장 좋은 방법이다.
+\end{flushleft}
+
+\begin{flushleft}
+    책과 별개로 개인적인 의견을 남긴다.
+    아래 제공되는 모던 리눅스 명령어는 배포판에 default로 설치되는 경우가 아닌경우가 많다.
+    따라서 설치 후 사용해야하는 경우가 많고, 이는 일반적인 스크립트 작성에 활용하기 어렵다는 것이다.
+    즉, 일반적으로 활용은 어렵다.
+\end{flushleft}
+
+\begin{flushleft}
+    결론적으로, 실제 활용하기엔 제약이 존재하므로 책의 모든 부분을 작성할 계획은 없으며
+    간략한 소개에 그칠 것이다.
+\end{flushleft}
 
 \subsubsection*{exa로 디렉터리 내용 나열하기}
+\begin{flushleft}
+    디렉터리에 무엇이 들어 잇는지 알고 싶으면 ls 혹은 그 변형 중 하나를 매개변수와 함께 사용한다.
+    이에 대응하는 모던 리눅스 명령어가 있는데 exa이다.
+\end{flushleft}
 
 \subsubsection*{bat로 파일 내용 보기}
+\begin{flushleft}
+    cat 명령어의 대안으로 bat 명령어 사용을 고려해볼 수 있다.
+    bat 명령은 구문을 강조하여 표시할 수 있으며 자체 pager 기능이 존재한다.
+\end{flushleft}
 
-\subsubsection*{rg로 파일에서 콘텐츠 찾기}
-
-\subsubsection*{jq로 처리하는 JSON 데이터}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=15cm]{resource/3-bat-example.png}
+    \caption{bat으로 렌더링한 Go 파일과 YAML 파일}
+    \label{fig:bat-example}
+\end{figure}
 
 
 \subsection*{일반 작업}
@@ -194,6 +342,7 @@
         검색 취소 & Ctrl+g & 기록 검색에 대응함 \\
     \end{tabu}
     \caption{단축키 목록}
+    \label{tab:shortcut}
 \end{table}
 
 \begin{flushleft}
@@ -207,8 +356,9 @@
     vi 같은 편집기를 사용하지 않고도 텍스트를 편집할 수 있다.
 \end{flushleft}
 
-\begin{figure}
-    \includegraphics[width=15cm]{resource/3-file-management.png}
+\begin{figure}[H]
+    \includegraphics[width=15cm]{resource/3-file-management}
+    \label{fig:file-manament}
     \begin{enumerate}
         \item echo 출력을 재지정해 파일을 생성한다.
         \item 파일 내용을 확인한다.
@@ -234,8 +384,9 @@
     예를 들어 파일의 시작 부분을 출력하고 싶다면 다음과 같이 실행한다.
 \end{flushleft}
 
-\begin{figure}[h]
-    \includegraphics[width=15cm]{resource/3-head-example.png}
+\begin{figure}[H]
+    \includegraphics[width=15cm]{resource/3-head-example}
+    \label{fig:head-example}
     \begin{enumerate}
         \item 긴 파일을 생성한다(100줄)
         \item 긴 파일의 처음 다섯 행을 출력한다.
@@ -246,8 +397,9 @@
     지속적으로 추가되는 파일의 실시간 업데이트를 받으려면 다음을 사용하면 된다.
 \end{flushleft}
 
-\begin{figure}[h]
-    \includegraphics[width=15cm]{resource/3-tail-example.png}
+\begin{figure}[H]
+    \includegraphics[width=15cm]{resource/3-tail-example}
+    \label{fig:tail-exemple}
     \begin{enumerate}
         \item tail을 이용해 로그 파일의 마지막을 출력한다.
             여기서 -f 옵션은 따르다(follow)라는 의미로,
@@ -264,7 +416,8 @@
 \end{flushleft}
 
 \begin{figure}[h]
-    \includegraphics[width=15cm]{resource/3-date-example.png}
+    \includegraphics[width=15cm]{resource/3-date-example}
+    \label{fig:date-example}
     \begin{enumerate}
         \item 유닉스 타임스탬프를 생성한다.
         \item 유닉스 타입스탬프를 사람이 읽을 수 있는 날짜로 변환한다.
